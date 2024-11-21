@@ -130,7 +130,8 @@ export default function Home(): JSX.Element {
 							Font-size Clamp Generator
 						</Text>
 						<Text mt={0.5}>
-							Generate linearly scale font-size with clamp()
+							Generate linearly scale font-size with clamp() For
+							Tailwind
 						</Text>
 					</header>
 					<main>
@@ -185,7 +186,7 @@ export default function Home(): JSX.Element {
 							</SettingsRow>
 						</Settings>
 
-						<Code code={clamp ? `font-size: ${clamp};` : ' '} />
+						<Code code={clamp ? `text-[${clamp}]` : ' '} />
 					</main>
 				</FlexBlock>
 			</App>

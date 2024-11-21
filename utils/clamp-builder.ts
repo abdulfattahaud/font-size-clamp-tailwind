@@ -43,7 +43,7 @@ export default function clampBuilder(options: {
 
 	const min = `${minFontSize}rem`;
 	const max = `${maxFontSize}rem`;
-	const preferred = `${yAxisIntersection}rem + ${toFixed(slope * 100)}vw`;
+	const preferred = `${yAxisIntersection}rem+${toFixed(slope * 100)}vw`;
 
-	return `clamp(${min}, ${preferred}, ${max})`;
+	return `clamp(${min},${preferred},${max})`;
 }
