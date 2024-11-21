@@ -1,5 +1,6 @@
-# Font-size clamp generator
+# Font-size clamp generator - Tailwind Version
 
 Generate linearly scale font-size with clamp()
 
-https://clamp.font-size.app/
+Original: https://clamp.font-size.app/
+Tailwind Version: https://font-size-clamp-tailwind.vercel.app/
