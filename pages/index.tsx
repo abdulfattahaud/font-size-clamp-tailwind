@@ -186,7 +186,7 @@ export default function Home(): JSX.Element {
 							</SettingsRow>
 						</Settings>
 
-						<Code code={clamp ? `text-[${clamp}]` : ' '} />
+						<Code code={clamp ? `${clamp}` : ' '} />
 					</main>
 				</FlexBlock>
 			</App>
