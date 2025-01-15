@@ -47,3 +47,36 @@ export default function clampBuilder(options: {
 
 	return `clamp(${min},${preferred},${max})`;
 }
+
+export function clampHeightBuilder(options: {
+	minFontSize: string;
+	maxFontSize: string;
+	minHeight: string;
+	maxHeight: string;
+	root: string;
+}): string {
+	if (Object.values(options).some((value) => !value)) {
+		return '';
+	}
+	const root = parseInt(options.root, 10);
+
+	const minFontSize = convertToRem(options.minFontSize, root);
+	const maxFontSize = convertToRem(options.maxFontSize, root);
+	const minHeight = convertToRem(options.minHeight, root);
+	const maxHeight = convertToRem(options.maxHeight, root);
+
+	if (
+		[minFontSize, maxFontSize, minHeight, maxHeight].some((v) => isNaN(v))
+	) {
+		return '';
+	}
+
+	const slope = (maxFontSize - minFontSize) / (maxHeight - minHeight);
+	const yAxisIntersection = toFixed(-minHeight * slope + minFontSize);
+
+	const min = `${minFontSize}rem`;
+	const max = `${maxFontSize}rem`;
+	const preferred = `${yAxisIntersection}rem+${toFixed(slope * 100)}vh`;
+
+	return `clamp(${min},${preferred},${max})`;
+}

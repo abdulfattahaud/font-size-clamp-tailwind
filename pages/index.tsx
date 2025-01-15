@@ -12,7 +12,7 @@ import Input from '@components/input';
 import Flex, { FlexBlock } from '@components/flex';
 import Text from '@components/text';
 import Code from '@components/code';
-import clampBuilder from '@utils/clamp-builder';
+import clampBuilder, { clampHeightBuilder } from '@utils/clamp-builder';
 import { hasSameKeys } from '@utils/objects';
 
 const App = styled.main`
@@ -57,16 +57,25 @@ const Settings = styled.div`
 `;
 
 const localStorageKey = 'clampFontSizeConfig';
-const initalConfig = {
+const initialConfig = {
 	root: '16',
 	minWidth: '500px',
 	maxWidth: '900px',
 	minFontSize: '16px',
 	maxFontSize: '48px',
 };
+const initialHeightConfig = {
+	root: '16',
+	minHeight: '340px',
+	maxHeight: '800px',
+	minFontSize: '16px',
+	maxFontSize: '48px',
+};
 
 export default function Home(): JSX.Element {
-	const [config, setConfig] = useState(initalConfig);
+	const [config, setConfig] = useState(initialConfig);
+	const [heightConfig, setHeightConfig] = useState(initialHeightConfig);
+	const [calcType, setCalcType] = useState('width');
 
 	useEffect(() => {
 		const savedConfig = localStorage.getItem(localStorageKey);
@@ -85,7 +94,7 @@ export default function Home(): JSX.Element {
 			try {
 				const parsedConfig = JSON.parse(savedConfig);
 
-				if (hasSameKeys(parsedConfig, initalConfig)) {
+				if (hasSameKeys(parsedConfig, initialConfig)) {
 					setConfig(JSON.parse(savedConfig));
 				}
 			} catch {
@@ -105,13 +114,24 @@ export default function Home(): JSX.Element {
 	}, [config]);
 
 	function handleChange(prop: string, value: string) {
-		setConfig((conf) => ({
-			...conf,
-			[prop]: value,
-		}));
+		if (calcType === 'width') {
+			setConfig((conf) => ({
+				...conf,
+				[prop]: value,
+			}));
+		} else {
+			setHeightConfig((conf) => ({
+				...conf,
+				[prop]: value,
+			}));
+		}
 	}
 
 	const clamp = useMemo(() => clampBuilder(config), [config]);
+	const clampHeight = useMemo(
+		() => clampHeightBuilder(heightConfig),
+		[heightConfig],
+	);
 
 	return (
 		<>
@@ -140,22 +160,54 @@ export default function Home(): JSX.Element {
 								<FlexBlock>
 									<Input
 										id="min-width"
-										label="Minimum viewport width"
-										value={config.minWidth}
+										label={
+											calcType === 'width'
+												? 'Minimum viewport width'
+												: 'Minimum viewport height'
+										}
+										value={
+											calcType === 'width'
+												? config.minWidth
+												: heightConfig.minHeight
+										}
 										type="number"
 										onChange={(value) =>
-											handleChange('minWidth', value)
+											calcType === 'width'
+												? handleChange(
+														'minWidth',
+														value,
+													)
+												: handleChange(
+														'minHeight',
+														value,
+													)
 										}
 									/>
 								</FlexBlock>
 								<FlexBlock>
 									<Input
 										id="max-width"
-										label="Maximum viewport width"
-										value={config.maxWidth}
+										label={
+											calcType === 'width'
+												? 'Maximum viewport width'
+												: 'Maximum viewport height'
+										}
+										value={
+											calcType === 'width'
+												? config.maxWidth
+												: heightConfig.maxHeight
+										}
 										type="number"
 										onChange={(value) =>
-											handleChange('maxWidth', value)
+											calcType === 'width'
+												? handleChange(
+														'maxWidth',
+														value,
+													)
+												: handleChange(
+														'maxHeight',
+														value,
+													)
 										}
 									/>
 								</FlexBlock>
@@ -166,7 +218,11 @@ export default function Home(): JSX.Element {
 										id="min-font-size"
 										label="Minimum font size"
 										type="number"
-										value={config.minFontSize}
+										value={
+											calcType === 'width'
+												? config.minFontSize
+												: heightConfig.minFontSize
+										}
 										onChange={(value) =>
 											handleChange('minFontSize', value)
 										}
@@ -176,7 +232,11 @@ export default function Home(): JSX.Element {
 									<Input
 										id="max-font-size"
 										label="Maximum font size"
-										value={config.maxFontSize}
+										value={
+											calcType === 'width'
+												? config.maxFontSize
+												: heightConfig.maxFontSize
+										}
 										type="number"
 										onChange={(value) =>
 											handleChange('maxFontSize', value)
@@ -184,9 +244,26 @@ export default function Home(): JSX.Element {
 									/>
 								</FlexBlock>
 							</SettingsRow>
+							<select
+								style={{
+									marginLeft: 'auto',
+									display: 'block',
+								}}
+								value={calcType}
+								onChange={(value) =>
+									setCalcType(value.target.value)
+								}
+							>
+								<option value="width">Width</option>
+								<option value="height">Height</option>
+							</select>
 						</Settings>
 
-						<Code code={clamp ? `${clamp}` : ' '} />
+						{calcType === 'width' ? (
+							<Code code={clamp ? `${clamp}` : ' '} />
+						) : (
+							<Code code={clampHeight ? `${clampHeight}` : ' '} />
+						)}
 					</main>
 				</FlexBlock>
 			</App>
